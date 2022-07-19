@@ -1,3 +1,5 @@
 *.olean
 /_target
 /leanpkg.path
+import_graph.dot
+import_graph.dot.png
