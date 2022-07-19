@@ -4,7 +4,8 @@ import data.fin.basic
 
 /-
 The type `fin n` gives a finite ordinal of size `n : N` (whose elements are `0 ... n-1`).
-We develop in particular theory of `fin ↑m` where `m : N+` is instead a positive natural
+This file is just some additional housekeeping to build on the existing library.
+In particular we develop the theory of `fin ↑m` where `m : N+` is a positive natural.
 -/
 
 namespace fin
