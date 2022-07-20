@@ -1,6 +1,7 @@
 import logic.unique
 import data.vector
 import data.vector.basic
+import data.vector.zip
 import fin.additional
 
 /-
@@ -9,6 +10,7 @@ Here we just build slightly on the theory from the library including
 * 'boxing' and 'unboxing' between length-1 vectors and their values;
 * conversions between vectors whose lengths are equal, but not definitionally so;
 * lemmas about positive-length vectors in terms of their 'head' and 'tail'.
+* 'zipping' two vectors (to make a vector of the product type)
 -/
 
 namespace vector
@@ -236,5 +238,46 @@ namespace vector
 
     --------------------------------------------------------------------------------
   end     -- positive-length vectors in terms of their 'head' and 'tail'          --
+  ----------------------------------------------------------------------------------
+
+  ----------------------------------------------------------------------------------
+  section -- zip                                                                  --
+    --------------------------------------------------------------------------------
+    variables {α : Type*} {β : Type*} {n : ℕ} {i : fin n}
+    variables {v₁ : vector α n} {v₂ : vector β n}
+
+    -- The library contains the more general `vector.zip_with` but,
+    -- unlike as with `list`, has not developed this special case:
+    def zip : vector α n → vector β n → vector (α × β) n := zip_with prod.mk
+
+    -- There are many more lemmas that could go here; I'll add them as I need them.
+
+    @[simp] lemma map_fst_zip:
+    map prod.fst (zip v₁ v₂) = v₁ :=
+    begin
+      apply ext,
+      intro i,
+      rw zip,
+      simp,
+    end
+
+    @[simp] lemma map_snd_zip:
+    map prod.snd (zip v₁ v₂) = v₂ :=
+    begin
+      apply ext,
+      intro i,
+      rw zip,
+      simp,
+    end
+
+    @[simp] lemma nth_zip:
+    (zip v₁ v₂).nth i = (v₁.nth i, v₂.nth i) :=
+    begin
+      rw zip,
+      simp,
+    end
+
+    --------------------------------------------------------------------------------
+  end     -- zip                                                                  --
   ----------------------------------------------------------------------------------
 end vector
