@@ -19,6 +19,15 @@ namespace vector
   instance unique {α : Sort*} : unique (vector α 0) :=
   {to_inhabited := {default := vector.nil}, uniq := vector.eq_nil}
 
+  -- would mark @[simp] except I don't want to mess with the standard behaviour
+  lemma map_of_of_fn {α : Type*} {β : Type*} {n} (f : fin n → α) (g : α → β) :
+  map g (of_fn f) = of_fn (g ∘ f) :=
+  begin
+    apply ext,
+    intro m,
+    simp,
+  end
+
   ----------------------------------------------------------------------------------
   section -- 'boxing' and 'unboxing' between length-1 vectors and their values    --
     --------------------------------------------------------------------------------
