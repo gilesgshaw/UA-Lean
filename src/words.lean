@@ -15,8 +15,6 @@ namespace UA
     | (word.var t)     := {t}
     | (word.opr f xxx) := ⋃ i, vars (xxx i)
 
-
-
     theorem finitely_many_vars {T : Type*} (w : word T) : set.finite (vars w) :=
     begin
       induction w,
@@ -116,7 +114,6 @@ namespace UA
       simp,
 
     end
-
   end
 
   postfix `-word`:40 := @word
