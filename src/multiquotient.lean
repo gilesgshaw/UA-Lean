@@ -14,6 +14,7 @@ namespace multi
     -- fix a particular relation:
     parameter {α : Type*}
     parameter {r : rel α}
+    parameter (ref : reflexive r)
     -- we imagine this to be an equiverlance relation,
     -- though in fact our proofs only ever require it to be reflexive
 
@@ -27,12 +28,12 @@ namespace multi
 
     -- `multivar_map` keeps track of such a function
     structure multivar_map {n : ℕ} {β : Type*} :=
-    (ref : reflexive r)
     (f : (vector α n) → β)
     (resp : f is_respectful)
     local infix `-var_map_to `:55 := @multivar_map
 
 
+    include ref
     -- if all variables respect r, in particular the first does
     theorem head_is_respectful (map : n+1-var_map_to β) {{a b}} :
     r a b → (curry_by_head map.f) a = (curry_by_head map.f) b :=
@@ -48,10 +49,11 @@ namespace multi
       apply map.resp _ _,
       apply (holds_for_head_and_tail r).2,
       split,
-      exact λ _, map.ref _,
+      exact λ _, ref _,
       exact hab,
 
     end
+    omit ref
 
     -- quotient by the first variable alone
     def quotient_off_head:
@@ -60,6 +62,7 @@ namespace multi
 
     -- the result of quotienting by the first variable
     -- respects r in all of the remaining variables
+    include ref
     lemma quotient_is_respectful (map : n+1-var_map_to β) :
     (quotient_off_head map) is_respectful :=
     begin
@@ -74,26 +77,26 @@ namespace multi
       apply (holds_for_head_and_tail r).2,
       split,
       exact hxy,
-      exact map.ref a,
+      exact ref a,
 
     end
+    omit ref
 
     -- thus we have a similar construction for the reduced map
     def reduce_towards_quotient:
     (n+1-var_map_to β) → (n-var_map_to (quot r → β)) := λ map, {
     f := quotient_off_head map,
-    ref := map.ref,
     resp := quotient_is_respectful map}
 
   end
 
   universe u -- induction is much happier dealing with one universe at a time!
   def lift_internal :Π
-  (n : ℕ) (α : Type u) (r : rel α) (β : Type u)
+  (n : ℕ) (α : Type u) (r : rel α) (ref : reflexive r) (β : Type u)
   (map : @multivar_map _ r n β) (v : vector (quot r) n),
   (β)
-  | 0     := λ _ _ _ map _, map.f nil
-  | (n+1) := λ α _ _ map v, @lift_internal n α _ _ (reduce_towards_quotient map) v.tail v.head
+  | 0     := λ _ _ _ _ map _, map.f nil
+  | (n+1) := λ α _ ref _ map v, @lift_internal n α _ ref _ (reduce_towards_quotient ref map) v.tail v.head
 
 end multi
 
@@ -135,7 +138,7 @@ namespace mquot
   reflexive r →
   (∀ a b : vector α n, (∀ i, r (a.nth i) (b.nth i)) → f a = f b) →
   (vector (quot r) n) → β :=
-  λ ref h, lift_internal n α r β { f := f, ref := ref, resp := h }
+  λ ref h, lift_internal n α r ref β { f := f, resp := h }
 
   theorem sound {α : Type*} {r : rel α} {n : ℕ} {a b : vector α n} :
   (∀ i, r (a.nth i) (b.nth i)) → mk r a = mk r b :=
@@ -166,7 +169,7 @@ namespace mquotient
   universe u def lift {α : Type u} [s : setoid α] {n : ℕ} {β : Type u} (f : (vector α n) → β) :
   (∀ a b : vector α n, (∀ i, setoid.r (a.nth i) (b.nth i)) → f a = f b) →
   (vector (quotient s) n) → β :=
-  λ h, lift_internal n α setoid.r β { f := f, ref := setoid.iseqv.left, resp := h }
+  λ h, lift_internal n α setoid.r setoid.iseqv.left β { f := f, resp := h }
 
   theorem sound {α : Type*} [s : setoid α] {n : ℕ} {a b : vector α n} :
   (∀ i, setoid.r (a.nth i) (b.nth i)) → mk a = mk b := mquot.sound
