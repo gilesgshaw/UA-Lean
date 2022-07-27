@@ -66,6 +66,21 @@ namespace UA
     local postfix `*` :110 := translate
 
 
+    /- *** do not put this lemma through `simp_rw`, as it hangs ***
+    -- Should probably investigate at some point. Especially don't expose this to `simp`,
+    -- for the same reason, though it isn't unequivocally a simplification anyway.     -/
+    lemma translation_functorial
+    {R : Type*} {S : Type*} {T : Type*} (ψ : R → S) (φ : S → T) (w : word R) :
+    (φ ∘ ψ)* w = (φ*) (ψ* w) :=
+    begin
+      induction w,
+      refl,
+      simp_rw translate,
+      simp_rw w_ih,
+      simp,
+    end
+
+
     /- The property of being a `homomorphism` is in fact characterised by the
     -- preservation of evaluations of *any* word in the language.          -/
 
