@@ -98,8 +98,6 @@ namespace UA
 
       change (φ (A f (vector.of_fn (eval ∘ www))) = eval (translate φ (word.opr f www))),
       change (∀ (input : vector ↥A (arity_of f)), B f (vector.map φ input) = φ (A f input)) at h,
-      change (∀ i, φ ((eval ∘ www) i) = eval (translate φ (www i))) at h_ind,
-
       specialize h (vector.of_fn (eval ∘ www)),
       rw ← h,
       rw vector.map_of_of_fn,
