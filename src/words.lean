@@ -1,5 +1,9 @@
 import hom
 
+import logic.equiv.fin
+import logic.equiv.basic
+import logic.is_empty
+
 namespace UA
   universe u_lang
 

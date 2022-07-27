@@ -7,6 +7,9 @@ import tactic.nth_rewrite.default
 import loose
 import cong
 
+set_option pp.beta true
+set_option trace.simplify.rewrite true
+
 namespace UA
   universes u_lang u_str u_t
 
