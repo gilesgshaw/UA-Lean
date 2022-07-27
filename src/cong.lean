@@ -169,6 +169,11 @@ namespace UA
 
       end
 
+
+      /- maybe should have
+      -- {X : Type*} [act : @structure_on σ X] : congruence ⟨X, act⟩
+      -- in these two instead -/
+
       def gen_by {A : σ-struct} (r : A → A → Prop) : congruence A :=
       {s := setoid.mk (cong_gen r) (cong_gen_is_equivalence),
       closed := cong_gen_is_respected}
