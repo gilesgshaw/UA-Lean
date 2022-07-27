@@ -146,10 +146,10 @@ namespace UA
         parameter (self : congruence A)
 
         def r := self.s.r
-        def π := quot.mk r
+        def proj := quot.mk r
 
         theorem respectful {f : σ.F} {{a b : vector A _}} :
-        (∀ i, a.nth i ≈ b.nth i) → π (A.action f a) = π (A.action f b) :=
+        (∀ i, a.nth i ≈ b.nth i) → proj (A.action f a) = proj (A.action f b) :=
         begin
           intro h,
           apply quot.sound,
@@ -159,7 +159,14 @@ namespace UA
 
         def quotient : Structure := {
         medium := quot r,
-        action := λ f, mquotient.lift (π ∘ A.action f) (respectful) }
+        action := λ f, mquotient.lift (proj ∘ A.action f) (respectful) }
+
+        def π : homomorphism A quotient := { func := proj,
+        resp_ops := λ _ _, mquotient.comp _ _}
+
+        @[simp] lemma action_of_quotient {f : σ.F} {v : vector A _} :
+        quotient.action f (vector.map π v) = π (A.action f v) := π.resp_ops _ _
+
       end
 
       def gen_by {A : σ-struct} (r : A → A → Prop) : congruence A :=
