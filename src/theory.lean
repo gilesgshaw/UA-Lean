@@ -52,52 +52,33 @@ namespace UA
     lemma satisfies_iff (T : Type*) [act : σ-struct_on T] : satisfies_τ T ↔
     ∀ inst ∈ ax_instances T, (eval_eqn inst).fst = (eval_eqn inst).snd :=
     begin
-      split,
-      intros h eqn is_inst,
-      rw satisfies_τ at h,
-      rw ax_instances at is_inst,
-      revert eqn,
+      split, all_goals {intro h_main}, {
 
-      let ss := {eqn : equation T | (eval_eqn eqn).fst = (eval_eqn eqn).snd},
-      change ((⋃ (ax ∈ τ.axioms_), st_instances T ax) ⊆ ss),
-      apply set.Union₂_subset,
+        apply set.Union₂_subset,
 
-      intros ax is_ax,
-      specialize @h ax is_ax,
-      rw true_sentances at h,
-      rw set.mem_def at h,
-      rw st_instances,
-      apply set.Union_subset,
-      intro subst,
-      intros eqn is_given,
-      specialize h eqn,
-      simp_rw set.mem_singleton_iff at is_given,
-      rw is_given,
-      have h := h _,
-      have hhh : eqn ∈ ss,
-      exact h,
-      rw ← is_given,
-      exact hhh,
-      rw st_instances,
-      rw set.mem_Union,
-      use subst,
-      simp,
-      exact is_given,
+        intros ax is_ax,
+        specialize @h_main ax is_ax,       -- introduce spesific axiom and specialize
 
+        rw [st_instances, set.Union_subset_iff],
 
-      intro h,
-      rw satisfies_τ,
-      intros ax is_ax,
-      rw true_sentances,
-      intros inst is_inst,
-      specialize h inst,
-      apply h,
-      rw ax_instances,
-      rw set.mem_Union,
-      use ax,
-      rw set.mem_Union,
-      use is_ax,
-      assumption,
+        intros subst eqn equal,            -- `subst` witnesses the valididity of `eqn`
+        apply h_main eqn,                  -- so the hypothesis says that `eqn` holds
+        rw [st_instances, set.mem_Union],
+        exact exists.intro subst equal,    -- after we provide the witness `subst`
+
+      },
+      {
+
+        intros ax is_ax inst is_inst,      -- have 2 variables with 2 properties
+
+        apply h_main inst,
+        rw [ax_instances, set.mem_Union],
+        apply exists.intro ax,
+        rw set.mem_Union,                  -- specialize to variables
+
+        exact exists.intro is_ax is_inst,  -- use properties
+
+      },
     end
 
 
