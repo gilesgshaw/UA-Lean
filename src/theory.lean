@@ -2,7 +2,9 @@ import data.set
 import data.set.basic
 import tactic.suggest
 import tactic.basic
+import tactic.nth_rewrite.default
 
+import loose
 import words
 
 namespace UA
@@ -96,6 +98,80 @@ namespace UA
 
     def enforce_axioms : Π X : σ-struct, congruence X :=
     λ X, UA.congruence.gen_by_set (eval_eqn '' (ax_instances X))
+
+    -- proof a bit long, might try and silm down later
+    theorem axioms_enforced {X : Structure} : satisfies_τ (enforce_axioms X).quotient :=
+    begin
+
+      let C := enforce_axioms X, -- the congruence on X
+      let X' := C.quotient,      -- the quotient object
+
+      apply (satisfies_iff X').2,
+      intros eqn eqn_is_axiom,
+
+      cases eqn with lhs rhs,
+      simp_rw [ax_instances, set.mem_Union] at eqn_is_axiom,
+      cases eqn_is_axiom with ax eqn_is_axiom,
+      cases eqn_is_axiom with is_axiom eqn_is_axiom,
+      simp_rw [st_instances, set.mem_Union] at eqn_is_axiom,
+      cases eqn_is_axiom with substitution eqn_is_axiom,
+      simp_rw [set.mem_singleton_iff, prod.ext_iff] at eqn_is_axiom,
+      cases eqn_is_axiom with left_is_axiom right_is_axiom,
+      simp_rw [left_is_axiom, right_is_axiom, eval_eqn],
+
+      let lift_of_subst := section_of_quot C.r ∘ substitution,
+      have lift_compatable : C.proj ∘ lift_of_subst = substitution, {
+        rw ← function.comp.assoc,
+        simp_rw [congruence.proj, section_of_quot_section],
+        exact function.comp.left_id _,
+      },
+
+      rw ← lift_compatable,
+      nth_rewrite_lhs 0 translation_functorial,
+      nth_rewrite_rhs 0 translation_functorial,
+
+      change (eval (translate C.π.func (lift_of_subst* ax.fst))) =
+      eval (translate C.π.func (lift_of_subst* ax.snd)),
+
+      simp_rw ← hom_iff.1 C.π.resp_ops (lift_of_subst* ax.fst),
+      simp_rw ← hom_iff.1 C.π.resp_ops (lift_of_subst* ax.snd),
+
+      apply quot.sound,
+      apply congruence.gentd_contains_gens,
+      rw set.mem_image,
+      use ((translate (section_of_quot C.r) lhs),
+      (translate (section_of_quot C.r) rhs)),
+      split,
+
+      -- witness is valid
+      rw ax_instances,
+      rw set.mem_Union,
+      use ax,
+      rw set.mem_Union,
+      use is_axiom,
+      rw st_instances,
+      rw set.mem_Union,
+      use lift_of_subst,
+      rw set.mem_singleton_iff,
+      apply prod.ext; {
+        simp,
+        nth_rewrite_rhs 0 translation_functorial,
+        apply congr_arg,
+        assumption,
+      },
+
+      -- witness is correct
+      nth_rewrite_rhs 0 translation_functorial,
+      nth_rewrite_rhs 1 translation_functorial,
+      rw eval_eqn,
+      apply prod.ext; {
+        simp,
+        apply congr_arg,
+        apply congr_arg,
+        assumption,
+      },
+
+    end
 
   end
 end UA
