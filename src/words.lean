@@ -84,8 +84,8 @@ namespace UA
     /- The property of being a `homomorphism` is in fact characterised by the
     -- preservation of evaluations of *any* word in the language.          -/
 
-    lemma hom_iff {A : σ-struct} {B : σ-struct} {φ : A → B}
-    : preserves_σ φ ↔ ∀ w : word A, φ (eval w) = eval (φ* w) :=
+    lemma hom_iff {A : σ-struct} {B : σ-struct} {φ : A → B} :
+    preserves_σ φ ↔ ∀ w : word A, φ (eval w) = eval (φ* w) :=
     begin
 
       split,
@@ -104,8 +104,8 @@ namespace UA
       rw ← h,
       rw vector.map_of_of_fn,
 
-      have temp_lem : φ ∘ eval ∘ www = λ i, eval (translate φ (www i))
-      := funext h_ind,
+      have temp_lem : φ ∘ eval ∘ www = λ i, eval (translate φ (www i)) :=
+      funext h_ind,
       rw temp_lem,
 
       change (B f (vector.of_fn (eval ∘ (λ i, (translate φ (www i)))))
