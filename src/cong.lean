@@ -181,6 +181,10 @@ namespace UA
       def gen_by_set {A : σ-struct} (R : set (A × A)) : congruence A :=
       gen_by (λ x y, (x, y) ∈ R)
 
+      lemma gentd_contains_gens {A : σ-struct} {R : set (A × A)} {x y : A} :
+      (x, y) ∈ R → (gen_by_set R).r x y :=
+      λ h, cong_gen_inflationary _ _ h
+
 
     end congruence
 
