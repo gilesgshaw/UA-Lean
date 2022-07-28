@@ -41,15 +41,6 @@ namespace UA
 
 
 
-    /- `direct product` of two stuctures -/
-
-    def dir_prod (A B : Structure) : Structure :=
-    { medium := A.medium × B.medium,
-    action := λ f input, (A.action f (vector.map prod.fst input), B.action f (vector.map prod.snd input)) }
-    -- local infix `×`:55 := product
-
-
-
     /- a `subStructure` is a subset which is closed under the operations -/
 
     def closed_under {medium : Type*} (sub_medium : set medium) (action : structure_on medium) :=
@@ -70,6 +61,15 @@ namespace UA
     parameter [σ : signature]
     include σ
     variable (f : σ.F)
+
+
+    /- `direct product` of two stuctures -/
+
+    def dir_prod (A B : Structure) : Structure :=
+    { medium := A.medium × B.medium,
+    action := λ f input, (A.action f (vector.map prod.fst input), B.action f (vector.map prod.snd input)) }
+    -- local infix `×`:55 := product
+
 
 
     /- A `homomorphism` is simply a function preserving the operations -/
