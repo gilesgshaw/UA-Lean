@@ -29,9 +29,11 @@ namespace UA
 
     /- The words themselvs for a structure in the ovbious way. -/
 
-    def word_algebra (T : Type*) : Structure := {
-    medium := word T,
-    action := λ f, word.opr f ∘ vector.nth}
+    def word_algebra (T : Type*) : Structure :=
+    {
+      medium := word T,
+      action := λ f, word.opr f ∘ vector.nth
+    }
 
     @[simp] lemma action_of_word_algebra {T : Type*} {f www} :
     (word_algebra T).action f www = word.opr f www.nth := rfl
@@ -44,16 +46,16 @@ namespace UA
     | (word.opr f xxx) := act f (vector.of_fn (λ i, eval (xxx i)))
 
     def evaluation {A :Structure} : homomorphism (word_algebra A) A := {
-    func := eval,
-    resp_ops := begin
-      intros f www,
-      rw action_of_word_algebra,
-      simp_rw eval,
-      congr,
-      apply vector.ext,
-      intro i,
-      simp,
-    end
+      func := eval,
+      resp_ops := begin
+        intros f www,
+        rw action_of_word_algebra,
+        simp_rw eval,
+        congr,
+        apply vector.ext,
+        intro i,
+        simp,
+      end
     }
 
 
