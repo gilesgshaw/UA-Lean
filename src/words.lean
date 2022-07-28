@@ -99,47 +99,39 @@ namespace UA
     /- The property of being a `homomorphism` is in fact characterised by the
     -- preservation of evaluations of *any* word in the language.          -/
 
+    lemma hom_preserves_eval
+    {α : Type*} {β : Type*} [A : structure_on α] [B : structure_on β] {φ : α → β} [H : preserves_σ φ]
+    {w : word α} : φ (eval w) = eval (translate φ w) :=
+    begin
+      induction w with _ f www h_ind, {
+        refl,
+      },
+      {
+        specialize H f (vector.of_fn (eval ∘ www)),
+        simp_rw [eval, ← H, vector.map_of_of_fn],
+        rw (funext h_ind : φ ∘ eval ∘ www = λ i, eval (φ† (www i))),
+        refl,
+      },
+    end
+
     lemma hom_iff {A : Structure} {B : Structure} {φ : A → B} :
     preserves_σ φ ↔ ∀ w : word A, φ (eval w) = eval (φ† w) :=
     begin
 
       split,
-      intros h w,
-      induction w with _ f www h_ind,
-      refl,
-      rw eval,
-      specialize h f,
-      simp at h_ind,
 
-      change (φ (A f (vector.of_fn (eval ∘ www))) = eval (translate φ (word.opr f www))),
-      change (∀ (input : vector ↥A (arity_of f)), B f (vector.map φ input) = φ (A f input)) at h,
-      specialize h (vector.of_fn (eval ∘ www)),
-      rw ← h,
-      rw vector.map_of_of_fn,
-
-      have temp_lem : φ ∘ eval ∘ www = λ i, eval (translate φ (www i)) :=
-      funext h_ind,
-      rw temp_lem,
-
-      change (B f (vector.of_fn (eval ∘ (λ i, (translate φ (www i)))))
-      = eval (translate φ (word.opr f www))),
-      simp_rw translate,
-      simp_rw eval,
-      refl,
+      introI,
+      intro word,
+      exact hom_preserves_eval,
 
       intros h f xxx,
       specialize h (word.opr f (word.var ∘ xxx.nth)),
-      simp_rw eval at h,
-      simp at h,
-      simp_rw UA.Structure_to_structure_on at *,
-      rw h,
-      simp_rw translate,
-      simp_rw eval,
-
+      simp_rw [eval, vector.of_fn_nth, UA.Structure_to_structure_on] at h,
+      simp_rw [UA.Structure_to_structure_on, h, translate, eval],
       congr,
       apply vector.ext,
       intro i,
-      simp,
+      simp_rw [vector.nth_of_fn, vector.nth_map],
 
     end
 
