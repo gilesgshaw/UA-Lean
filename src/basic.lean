@@ -68,9 +68,8 @@ namespace UA
 
     /- A `homomorphism` is simply a function preserving the operations -/
 
-    variables {A B : Structure}
 
-    def preserves_σ (func : (A → B)) := -- predicate that a function is a homomorphism
+    def preserves_σ {A B : Structure} (func : (A → B)) := -- predicate that a function is a homomorphism
     ∀ (f) (input : vector A (arity_of f)),
     B.action f (vector.map func input) = func (A.action f input)
 
@@ -78,12 +77,13 @@ namespace UA
     (func : A → B)
     (resp_ops : preserves_σ func)
 
-    instance homomorphism_to_fun : has_coe_to_fun (@homomorphism A B) _ := ⟨homomorphism.func⟩
+    instance homomorphism_to_fun {A B : Structure} : has_coe_to_fun (@homomorphism A B) _ := ⟨homomorphism.func⟩
 
 
 
     /- Simplification lemmas -/
 
+    variables {A B : Structure}
     variable {x : vector A (arity_of f)}
     variable {y : vector B (arity_of f)}
 
