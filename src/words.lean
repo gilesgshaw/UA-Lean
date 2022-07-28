@@ -47,18 +47,20 @@ namespace UA
     | (word.var t)    := t
     | (word.opr f xxx) := act f (vector.of_fn (λ i, eval (xxx i)))
 
-    def evaluation {A :Structure} : homomorphism (word_algebra A) A := {
+    lemma eval_is_hom {A : Type*} [act : structure_on A] : preserves_σ (@eval A _) :=
+    begin
+      intros f www,
+      rw UA.action_on_words,
+      simp_rw eval,
+      congr,
+      apply vector.ext,
+      intro i,
+      simp,
+    end
+
+    def evaluation {A : Structure} : homomorphism (word_algebra A) A := {
       func := eval,
-      resp_ops := begin
-        intros f www,
-        simp_rw UA.Structure_to_structure_on,
-        rw action_of_word_algebra,
-        simp_rw eval,
-        congr,
-        apply vector.ext,
-        intro i,
-        simp,
-      end
+      resp_ops := eval_is_hom
     }
 
 
