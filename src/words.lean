@@ -67,7 +67,15 @@ namespace UA
     | (word.var t)    := word.var (φ t)
     | (word.opr f xxx) := word.opr f (λ i, translate (xxx i))
 
-    local postfix `†` :110 := translate
+  end
+
+  /- *** Introduce notation outside of the section, so it can infer σ independantly *** -/
+  postfix `†` :110 := translate -- maybe I've misunderstood by setting this value high...
+  -- postfix `-word`:40 := @word -- now redundant since σ is a class instance
+
+  section
+    parameter [σ : signature]
+    include σ
 
 
     /- *** do not put this lemma through `simp_rw`, as it hangs ***
@@ -131,9 +139,6 @@ namespace UA
       simp,
 
     end
+
   end
-
-  -- postfix `-word`:40 := @word -- shouldn't need this since σ is now class-inferred
-  postfix `†` :110 := translate -- maybe I've misunderstood by setting this value high...
-
 end UA
