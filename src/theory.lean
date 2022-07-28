@@ -16,12 +16,13 @@ namespace UA
     /  (We do not allow conditional equations, or horn clauses.)                -/
 
     class theory extends signature :=
-    (axioms_ : set (to_signature-word ℕ × to_signature-word ℕ))
+    (axioms_ : set (word ℕ × word ℕ))
 
     parameter [τ : theory]
+    include τ
 
     def σ := τ.to_signature
-    def equation (T : Type*) := σ-word T × σ-word T
+    def equation (T : Type*) := word T × word T
     local notation `sentance` := equation ℕ
 
     /- For convinience, we understand by `equation` simply a pair of words.

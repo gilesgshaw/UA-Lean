@@ -129,7 +129,7 @@ namespace UA
     end
   end
 
-  postfix `-word`:40 := @word
+  -- postfix `-word`:40 := @word -- shouldn't need this since σ is now class-inferred
   postfix `†` :110 := translate -- maybe I've misunderstood by setting this value high...
 
 end UA
