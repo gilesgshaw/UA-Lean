@@ -3,7 +3,9 @@ import multiquotient
 import relation.additional
 
 namespace UA
-  section parameter [σ : signature]
+  section
+    parameter [σ : signature]
+    include σ
 
 
     /- A `congruence` is an equiverlance relation which is 'respected'  --
@@ -13,8 +15,8 @@ namespace UA
 
     section
       parameter {X : Type*}
-      parameter [act : @structure_on σ X]
-      local notation `A` := (⟨X, act⟩ : σ-struct)
+      parameter [act : structure_on X]
+      local notation `A` := (⟨X, act⟩ : Structure)
 
       -- the operations are said to 'respect' a binary relation ~ if,
       -- in an equation f (x, y, z) = a,
@@ -118,10 +120,10 @@ namespace UA
         case cong_gen.trans : a b c _ _ hab hbc { exact (smallest_cong_ctg_is_equivalence).right.right hab hbc, },
 
         case cong_gen.op : f xxx yyy h i_hyp  {
-        have r_respects_spefific_input :
-        ((∀ i, smallest_cong_ctg r (xxx.nth i) (yyy.nth i)) → smallest_cong_ctg r (act f xxx) (act f yyy)),
-        intro i, exact smallest_cong_ctg_is_respected f xxx yyy i,
-        exact r_respects_spefific_input i_hyp,
+          have r_respects_spefific_input :
+          ((∀ i, smallest_cong_ctg r (xxx.nth i) (yyy.nth i)) → smallest_cong_ctg r (act f xxx) (act f yyy)),
+          intro i, exact smallest_cong_ctg_is_respected f xxx yyy i,
+          exact r_respects_spefific_input i_hyp,
         },
 
         intro h,
@@ -133,16 +135,16 @@ namespace UA
 
     /- We implement `congruence` as a class (in the vein of setoid). -/
 
-    class congruence (A : σ-struct) :=
+    class congruence (A : Structure) :=
     (s : setoid A)
     (closed : operations_respect_relation s.r)
 
-    instance congruence_setoid (A : σ-struct) [cong : congruence A] : setoid A := cong.s
+    instance congruence_setoid (A : Structure) [cong : congruence A] : setoid A := cong.s
 
     namespace congruence
 
       section
-        parameter {A : σ-struct}
+        parameter {A : Structure}
         parameter (self : congruence A)
 
         def r := self.s.r
@@ -157,9 +159,11 @@ namespace UA
           exact h,
         end
 
-        def quotient : Structure := {
-        medium := quot r,
-        action := λ f, mquotient.lift (proj ∘ A.action f) (respectful) }
+        def quotient : Structure :=
+        {
+          medium := quot r,
+          action := λ f, mquotient.lift (proj ∘ A.action f) (respectful)
+        }
 
         def π : homomorphism A quotient := { func := proj,
         resp_ops := λ _ _, mquotient.comp _ _}
@@ -174,14 +178,14 @@ namespace UA
       -- {X : Type*} [act : @structure_on σ X] : congruence ⟨X, act⟩
       -- in these two instead -/
 
-      def gen_by {A : σ-struct} (r : A → A → Prop) : congruence A :=
+      def gen_by {A : Structure} (r : A → A → Prop) : congruence A :=
       {s := setoid.mk (cong_gen r) (cong_gen_is_equivalence),
       closed := cong_gen_is_respected}
 
-      def gen_by_set {A : σ-struct} (R : set (A × A)) : congruence A :=
+      def gen_by_set {A : Structure} (R : set (A × A)) : congruence A :=
       gen_by (λ x y, (x, y) ∈ R)
 
-      lemma gentd_contains_gens {A : σ-struct} {R : set (A × A)} {x y : A} :
+      lemma gentd_contains_gens {A : Structure} {R : set (A × A)} {x y : A} :
       (x, y) ∈ R → (gen_by_set R).r x y :=
       λ h, cong_gen_inflationary _ _ h
 
@@ -191,10 +195,10 @@ namespace UA
 
     -- these are probably useless as they 'forget' any relation to the original set
 
-    --def quotient_gen_by {X : Type*} [act : @structure_on σ X] (r : X → X → Prop) : σ-struct :=
+    --def quotient_gen_by {X : Type*} [act : @structure_on σ X] (r : X → X → Prop) : Structure :=
     --(UA.congruence.gen_by r).quotient
 
-    --def quotient_gen_by_set {X : Type*} [act : @structure_on σ X] (R : set (X × X)) : σ-struct :=
+    --def quotient_gen_by_set {X : Type*} [act : @structure_on σ X] (R : set (X × X)) : Structure :=
     --(UA.congruence.gen_by_set R).quotient
 
 

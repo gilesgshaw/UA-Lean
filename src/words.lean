@@ -29,7 +29,7 @@ namespace UA
 
     /- The words themselvs for a structure in the ovbious way. -/
 
-    def word_algebra (T : Type*) : σ-struct := {
+    def word_algebra (T : Type*) : Structure := {
     medium := word T,
     action := λ f, word.opr f ∘ vector.nth}
 
@@ -43,7 +43,7 @@ namespace UA
     | (word.var t)    := t
     | (word.opr f xxx) := act f (vector.of_fn (λ i, eval (xxx i)))
 
-    def evaluation {A : σ-struct} : homomorphism (word_algebra A) A := {
+    def evaluation {A :Structure} : homomorphism (word_algebra A) A := {
     func := eval,
     resp_ops := begin
       intros f www,
@@ -84,7 +84,7 @@ namespace UA
     /- The property of being a `homomorphism` is in fact characterised by the
     -- preservation of evaluations of *any* word in the language.          -/
 
-    lemma hom_iff {A : σ-struct} {B : σ-struct} {φ : A → B} :
+    lemma hom_iff {A :Structure} {B :Structure} {φ : A → B} :
     preserves_σ φ ↔ ∀ w : word A, φ (eval w) = eval (φ* w) :=
     begin
 

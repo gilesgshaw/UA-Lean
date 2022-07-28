@@ -40,18 +40,18 @@ namespace UA
     (⋃ ax ∈ τ.axioms_, st_instances T ax)
 
     -- the interpretation of an equation in a given structure
-    def eval_eqn {T : Type*} [act : σ-struct_on T] (e : equation T) : T × T :=
+    def eval_eqn {T : Type*} [act : structure_on T] (e : equation T) : T × T :=
     (eval e.fst, eval e.snd)
 
     -- those sentances which are 'modelled' by a given structure
-    def true_sentances (T : Type*) [act : σ-struct_on T] : set sentance :=
+    def true_sentances (T : Type*) [act : structure_on T] : set sentance :=
     λ st, ∀ inst ∈ st_instances T st, (eval_eqn inst).fst = (eval_eqn inst).snd
 
     -- predicate that a structure satisfies the axioms of τ
-    def satisfies_τ (T : Type*) [act : σ-struct_on T] := τ.axioms_ ⊆ true_sentances T
+    def satisfies_τ (T : Type*) [act : structure_on T] := τ.axioms_ ⊆ true_sentances T
 
     -- more user-friendly version of this statement
-    lemma satisfies_iff (T : Type*) [act : σ-struct_on T] : satisfies_τ T ↔
+    lemma satisfies_iff (T : Type*) [act : structure_on T] : satisfies_τ T ↔
     ∀ inst ∈ ax_instances T, (eval_eqn inst).fst = (eval_eqn inst).snd :=
     begin
       split, all_goals {intro h_main}, {
@@ -89,14 +89,14 @@ namespace UA
 
     structure Object :=
     (medium      : Type*)
-    (action      : σ-struct_on medium)
+    (action      : structure_on medium)
     (satf_axioms : satisfies_τ medium)
 
 
     /- Given any structure, we can enfore the axioms in the 'free-est' possible way.
     -- The construction of 'free objects' (e.g. groups) is a special case of this -/
 
-    def enforce_axioms : Π X : σ-struct, congruence X :=
+    def enforce_axioms : Π X : Structure, congruence X :=
     λ X, UA.congruence.gen_by_set (eval_eqn '' (ax_instances X))
 
     -- proof a bit long, might try and silm down later

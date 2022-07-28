@@ -119,10 +119,12 @@ namespace UA
 
   /-` (re)define notation here globally, since we can now generalize over the parameter σ `-/
 
-  postfix `-struct`:40 := @Structure
-  infix `-struct_on `:40 := @structure_on
   infix ` is_closed_under `:55 := closed_under
   postfix ` is_closed `:55 := closed -- check this isn't useless...
   -- infix `×`:55 := product
+
+  -- shouldn't need these two since σ is now class-inferred
+  -- postfix `-struct`:40 := @Structure
+  -- infix `-struct_on `:40 := @structure_on
 
 end UA
