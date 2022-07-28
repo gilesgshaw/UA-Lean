@@ -33,7 +33,7 @@ namespace UA
 
     -- all instances of a sentance within a given set
     def st_instances (T : Type*) (st : sentance) : set (equation T) :=
-    ⋃ subst : ℕ → T, {(subst* st.fst, subst* st.snd)}
+    ⋃ subst : ℕ → T, {(subst† st.fst, subst† st.snd)}
 
     -- all instances of our axioms within a given set
     def ax_instances (T : Type*) : set (equation T) :=
@@ -130,11 +130,11 @@ namespace UA
       nth_rewrite_lhs 0 translation_functorial,
       nth_rewrite_rhs 0 translation_functorial,
 
-      change (eval (translate C.π.func (lift_of_subst* ax.fst))) =
-      eval (translate C.π.func (lift_of_subst* ax.snd)),
+      change (eval (translate C.π.func (lift_of_subst† ax.fst))) =
+      eval (translate C.π.func (lift_of_subst† ax.snd)),
 
-      simp_rw ← hom_iff.1 C.π.resp_ops (lift_of_subst* ax.fst),
-      simp_rw ← hom_iff.1 C.π.resp_ops (lift_of_subst* ax.snd),
+      simp_rw ← hom_iff.1 C.π.resp_ops (lift_of_subst† ax.fst),
+      simp_rw ← hom_iff.1 C.π.resp_ops (lift_of_subst† ax.snd),
 
       apply quot.sound,
       apply congruence.gentd_contains_gens,

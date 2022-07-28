@@ -63,7 +63,7 @@ namespace UA
     | (word.var t)    := word.var (φ t)
     | (word.opr f xxx) := word.opr f (λ i, translate (xxx i))
 
-    local postfix `*` :110 := translate
+    local postfix `†` :110 := translate
 
 
     /- *** do not put this lemma through `simp_rw`, as it hangs ***
@@ -71,7 +71,7 @@ namespace UA
     -- for the same reason, though it isn't unequivocally a simplification anyway.     -/
     lemma translation_functorial
     {R : Type*} {S : Type*} {T : Type*} (ψ : R → S) (φ : S → T) (w : word R) :
-    (φ ∘ ψ)* w = (φ*) (ψ* w) :=
+    (φ ∘ ψ)† w = (φ†) (ψ† w) :=
     begin
       induction w,
       refl,
@@ -85,7 +85,7 @@ namespace UA
     -- preservation of evaluations of *any* word in the language.          -/
 
     lemma hom_iff {A :Structure} {B :Structure} {φ : A → B} :
-    preserves_σ φ ↔ ∀ w : word A, φ (eval w) = eval (φ* w) :=
+    preserves_σ φ ↔ ∀ w : word A, φ (eval w) = eval (φ† w) :=
     begin
 
       split,
@@ -130,6 +130,6 @@ namespace UA
   end
 
   postfix `-word`:40 := @word
-  postfix `*` :110 := translate -- maybe I've misunderstood by setting this value high...
+  postfix `†` :110 := translate -- maybe I've misunderstood by setting this value high...
 
 end UA
