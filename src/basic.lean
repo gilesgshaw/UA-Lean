@@ -14,10 +14,11 @@ namespace UA
     /- a signature σ is just a set (F) of operation symbols,                     /
     /  with specified (finite) arity.                                           -/
 
-    structure signature := (F : Type*) (arity_of : F → ℕ)
+    class signature := (F : Type*) (arity_of : F → ℕ)
 
-    parameter {σ : signature}
-    def arity_of (f) := σ.arity_of f
+    parameter [σ : signature]
+    include σ
+    def arity_of (f) := signature.arity_of f
     variable (f : σ.F)
 
     /- for convinience we fix σ and the 'operations' f here.                     /

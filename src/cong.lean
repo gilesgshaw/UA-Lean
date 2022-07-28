@@ -3,7 +3,7 @@ import multiquotient
 import relation.additional
 
 namespace UA
-  section parameter {σ : signature}
+  section parameter [σ : signature]
 
 
     /- A `congruence` is an equiverlance relation which is 'respected'  --

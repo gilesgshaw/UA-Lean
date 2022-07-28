@@ -2,7 +2,7 @@ import cong
 
 namespace UA
   section
-    parameter {σ : signature}
+    parameter [σ : signature]
 
 
     /- *** `word` means an expression in the language of `σ`, with variables from `T` *** -/

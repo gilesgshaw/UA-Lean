@@ -15,10 +15,10 @@ namespace UA
     /  That is, they are simply universally quantified equations.
     /  (We do not allow conditional equations, or horn clauses.)                -/
 
-    structure theory extends signature :=
+    class theory extends signature :=
     (axioms_ : set (to_signature-word ℕ × to_signature-word ℕ))
 
-    parameter {τ : theory}
+    parameter [τ : theory]
 
     def σ := τ.to_signature
     def equation (T : Type*) := σ-word T × σ-word T
