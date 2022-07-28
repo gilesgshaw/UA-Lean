@@ -29,10 +29,12 @@ namespace UA
 
     /- The words themselvs for a structure in the ovbious way. -/
 
+    instance action_on_words (T : Type*) : structure_on (word T) := λ f, word.opr f ∘ vector.nth
+
     def word_algebra (T : Type*) : Structure :=
     {
       medium := word T,
-      action := λ f, word.opr f ∘ vector.nth
+      action := action_on_words T,
     }
 
     @[simp] lemma action_of_word_algebra {T : Type*} {f www} :
