@@ -39,7 +39,7 @@ namespace UA
 
     /- A `σ-structure` admits a canonical `evaluation` from its word algebra -/
 
-    def eval {A : Type*} [act : @structure_on σ A] : word A → A
+    def eval {A : Type*} [act : structure_on A] : word A → A
     | (word.var t)    := t
     | (word.opr f xxx) := act f (vector.of_fn (λ i, eval (xxx i)))
 

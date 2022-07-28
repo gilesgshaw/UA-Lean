@@ -175,7 +175,7 @@ namespace UA
 
 
       /- maybe should have
-      -- {X : Type*} [act : @structure_on σ X] : congruence ⟨X, act⟩
+      -- {X : Type*} [act : structure_on X] : congruence ⟨X, act⟩
       -- in these two instead -/
 
       def gen_by {A : Structure} (r : A → A → Prop) : congruence A :=
@@ -195,10 +195,10 @@ namespace UA
 
     -- these are probably useless as they 'forget' any relation to the original set
 
-    --def quotient_gen_by {X : Type*} [act : @structure_on σ X] (r : X → X → Prop) : Structure :=
+    --def quotient_gen_by {X : Type*} [act : structure_on X] (r : X → X → Prop) : Structure :=
     --(UA.congruence.gen_by r).quotient
 
-    --def quotient_gen_by_set {X : Type*} [act : @structure_on σ X] (R : set (X × X)) : Structure :=
+    --def quotient_gen_by_set {X : Type*} [act : structure_on X] (R : set (X × X)) : Structure :=
     --(UA.congruence.gen_by_set R).quotient
 
 
