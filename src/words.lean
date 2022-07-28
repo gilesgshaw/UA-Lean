@@ -51,6 +51,7 @@ namespace UA
       func := eval,
       resp_ops := begin
         intros f www,
+        simp_rw UA.Structure_to_structure_on,
         rw action_of_word_algebra,
         simp_rw eval,
         congr,
@@ -128,7 +129,7 @@ namespace UA
       specialize h (word.opr f (word.var ∘ xxx.nth)),
       simp_rw eval at h,
       simp at h,
-      rw UA.Structure_to_structure_on at h,
+      simp_rw UA.Structure_to_structure_on at *,
       rw h,
       simp_rw translate,
       simp_rw eval,

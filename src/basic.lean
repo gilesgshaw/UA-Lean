@@ -69,9 +69,9 @@ namespace UA
     /- A `homomorphism` is simply a function preserving the operations -/
 
 
-    def preserves_σ {A B : Structure} (func : (A → B)) := -- predicate that a function is a homomorphism
-    ∀ (f) (input : vector A (arity_of f)),
-    B.action f (vector.map func input) = func (A.action f input)
+    def preserves_σ {α : Type*} {β : Type*} [A : structure_on α] [B : structure_on β] (func : (α → β)) :=
+    ∀ (f) (input : vector α (arity_of f)),
+    B f (vector.map func input) = func (A f input) -- predicate that a function is a homomorphism
 
     structure homomorphism (A B : Structure) := -- a function demonstrated to be a homomorphism
     (func : A → B)
