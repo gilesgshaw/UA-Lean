@@ -86,7 +86,7 @@ namespace UA
     /- The property of being a `homomorphism` is in fact characterised by the
     -- preservation of evaluations of *any* word in the language.          -/
 
-    lemma hom_iff {A :Structure} {B :Structure} {φ : A → B} :
+    lemma hom_iff {A : Structure} {B : Structure} {φ : A → B} :
     preserves_σ φ ↔ ∀ w : word A, φ (eval w) = eval (φ† w) :=
     begin
 
