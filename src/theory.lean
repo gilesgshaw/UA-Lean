@@ -21,7 +21,6 @@ namespace UA
     parameter [τ : theory]
     include τ
 
-    def σ := τ.to_signature
     def equation (T : Type*) := word T × word T
     local notation `sentance` := equation ℕ
 
