@@ -64,6 +64,12 @@ namespace UA
     (sub_medium : set A)
     (closed : sub_medium is_closed)
 
+  end
+
+  section
+    parameter [σ : signature]
+    include σ
+    variable (f : σ.F)
 
 
     /- A `homomorphism` is simply a function preserving the operations -/
