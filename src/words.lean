@@ -49,7 +49,7 @@ namespace UA
     | (word.var t)    := t
     | (word.opr f xxx) := act f (vector.of_fn (λ i, eval (xxx i)))
 
-    instance eval_is_hom {α : Type*} [act : structure_on α] : preserves_σ (@eval α _) :=
+    instance eval_is_hom {α : Type*} [act : structure_on α] : homomorphism (@eval α _) :=
     begin
       intros f www,
       rw UA.action_on_words,
@@ -104,7 +104,7 @@ namespace UA
     lemma hom_preserves_eval
     {α : Type*} {β : Type*} [actA : structure_on α] [actB : structure_on β]
     {φ : α → β}
-    [H : preserves_σ φ] {w : word α} : φ (eval w) = eval (translate φ w) :=
+    [H : homomorphism φ] {w : word α} : φ (eval w) = eval (translate φ w) :=
     begin
       induction w with _ f www h_ind, {
         refl,
@@ -120,7 +120,7 @@ namespace UA
     lemma hom_iff
     {α : Type*} {β : Type*} [actA : structure_on α] [actB : structure_on β]
     {φ : α → β} :
-    preserves_σ φ ↔ ∀ w : word α, φ (eval w) = eval (φ† w) :=
+    homomorphism φ ↔ ∀ w : word α, φ (eval w) = eval (φ† w) :=
     begin
 
       split,

@@ -161,7 +161,7 @@ namespace UA
         instance quotient_action : structure_on (quot r) :=
         λ f, mquotient.lift (π ∘ act f) (respectful)
 
-        instance proj_is_hom : @preserves_σ _ _ _ act _ π := λ _ _, by { apply mquotient.comp }
+        instance proj_is_hom : @homomorphism _ _ _ act _ π := λ _ _, by { apply mquotient.comp }
 
         def quotient : Structure := ⟨quot r, quotient_action⟩
         def proj : Homomorphism α quotient := ⟨π, proj_is_hom⟩
