@@ -31,23 +31,25 @@ namespace UA
 
     instance action_on_words (T : Type*) : structure_on (word T) := λ f, word.opr f ∘ vector.nth
 
-    def word_algebra (T : Type*) : Structure :=
-    {
-      medium := word T,
-      action := action_on_words T,
-    }
+    def word_algebra (T : Type*) : Structure := ⟨word T, action_on_words T⟩
 
     @[simp] lemma action_of_word_algebra {T : Type*} {f www} :
     (word_algebra T).action f www = word.opr f www.nth := rfl
 
+  end
+
+  section
+    parameter [σ : signature]
+    include σ
+
 
     /- A `σ-structure` admits a canonical `evaluation` from its word algebra -/
 
-    def eval {A : Type*} [act : structure_on A] : word A → A
+    def eval {α : Type*} [act : structure_on α] : word α → α
     | (word.var t)    := t
     | (word.opr f xxx) := act f (vector.of_fn (λ i, eval (xxx i)))
 
-    lemma eval_is_hom {A : Type*} [act : structure_on A] : preserves_σ (@eval A _) :=
+    instance eval_is_hom {α : Type*} [act : structure_on α] : preserves_σ (@eval α _) :=
     begin
       intros f www,
       rw UA.action_on_words,
@@ -58,23 +60,23 @@ namespace UA
       simp,
     end
 
-    def evaluation {A : Structure} : homomorphism (word_algebra A) A := {
-      func := eval,
-      resp_ops := eval_is_hom
-    }
-
-
-    /- `translatation` is the process of substituting for the variables in a word -/
-
-    def translate {S : Type*} {T : Type*} (φ : S → T) : word S → word T
-    | (word.var t)    := word.var (φ t)
-    | (word.opr f xxx) := word.opr f (λ i, translate (xxx i))
+    def evaluation {A : Structure} : Homomorphism (word_algebra A) A := ⟨eval, eval_is_hom⟩
 
   end
 
-  /- *** Introduce notation outside of the section, so it can infer σ independantly *** -/
-  postfix `†` :110 := translate -- maybe I've misunderstood by setting this value high...
-  -- postfix `-word`:40 := @word -- now redundant since σ is a class instance
+
+  /- `translatation` is the process of substituting for the variables in a word -/
+
+  def translate [σ : signature] {S : Type*} {T : Type*}
+  (φ : S → T) : word S → word T
+  | (word.var t)     := word.var (φ t)
+  | (word.opr f xxx) := word.opr f (λ i, translate (xxx i))
+
+  /- *** Introduce notation out of sight of any parameters ***
+  -- previously this was declared 'local', to depend on the parameter σ, but this
+  -- seemed to create a mysterious problem where there were two σ's floating around -/
+  postfix `†` : 110 := translate -- right value?
+
 
   section
     parameter [σ : signature]
@@ -100,8 +102,9 @@ namespace UA
     -- preservation of evaluations of *any* word in the language.          -/
 
     lemma hom_preserves_eval
-    {α : Type*} {β : Type*} [A : structure_on α] [B : structure_on β] {φ : α → β} [H : preserves_σ φ]
-    {w : word α} : φ (eval w) = eval (translate φ w) :=
+    {α : Type*} {β : Type*} [actA : structure_on α] [actB : structure_on β]
+    {φ : α → β}
+    [H : preserves_σ φ] {w : word α} : φ (eval w) = eval (translate φ w) :=
     begin
       induction w with _ f www h_ind, {
         refl,
@@ -114,8 +117,10 @@ namespace UA
       },
     end
 
-    lemma hom_iff {A : Structure} {B : Structure} {φ : A → B} :
-    preserves_σ φ ↔ ∀ w : word A, φ (eval w) = eval (φ† w) :=
+    lemma hom_iff
+    {α : Type*} {β : Type*} [actA : structure_on α] [actB : structure_on β]
+    {φ : α → β} :
+    preserves_σ φ ↔ ∀ w : word α, φ (eval w) = eval (φ† w) :=
     begin
 
       split,
@@ -126,8 +131,8 @@ namespace UA
 
       intros h f xxx,
       specialize h (word.opr f (word.var ∘ xxx.nth)),
-      simp_rw [eval, vector.of_fn_nth, UA.Structure_to_structure_on] at h,
-      simp_rw [UA.Structure_to_structure_on, h, translate, eval],
+      simp_rw [eval, vector.of_fn_nth] at h,
+      simp_rw [h, translate, eval],
       congr,
       apply vector.ext,
       intro i,
