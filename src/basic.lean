@@ -7,6 +7,10 @@ import data.vector.zip
 
 import vector.additional
 
+import category_theory.concrete_category.bundled
+
+open category_theory
+
 namespace UA
   universes u_lang u_str u_strA u_strB
 
@@ -24,21 +28,21 @@ namespace UA
     -- so that they become universe polymorphic within this file. -/
 
     section
-      parameter [σ : signature.{u_lang}]
-      include σ
 
       /- `structure_on` is a realisation of operations on a given type. -/
 
-      @[class] def structure_on (medium : Type u_str) : Type (max u_lang u_str) :=
+      @[class] def structure_on [σ : signature.{u_lang}] (medium : Type u_str) : Type (max u_lang u_str) :=
       Π f, (vector medium (arity_of f)) → medium
 
+      parameter [σ : signature.{u_lang}]
+      include σ
 
       /- A `structure` is a `medium` equipped with the relevant `action`. -/
 
-      structure Structure : Type (max u_lang (u_str+1)) :=
-      (medium : Type u_str)
-      (action : structure_on medium)
+      def Structure : Type (max u_lang (u_str+1)) := bundled (structure_on.{u_lang u_str})
 
+      abbreviation Structure.medium (self : Structure) := self.α
+      abbreviation Structure.action (self : Structure) := self.str
 
 
       /- Coersions and instances -/
@@ -51,8 +55,25 @@ namespace UA
 
 
 
+    /- `structure_on_` and `Structure_` are subtle varients, where we require the media have
+    -- universe levels at least `u_lang`. This ensures structures have the same levels as their
+    -- underlying sets, as is required by much of the category theory infastructure in mathlib -/
+
+    section
+      parameter [σ : signature.{u_lang}]
+      include σ
+
+      abbreviation structure_on_ : Type (max u_lang u_str) → Type (max u_lang u_str) :=
+      λ α, structure_on.{u_lang (max u_lang u_str)} α
+
+      abbreviation Structure_ : Type ((max u_lang u_str)+1) :=
+      Structure.{u_lang (max u_lang u_str)}
+
+    end
+
     parameter [σ : signature.{u_lang}]
     include σ
+
 
 
     /- `direct product` of two stuctures -/
