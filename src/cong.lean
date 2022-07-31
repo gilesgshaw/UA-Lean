@@ -4,9 +4,11 @@ import multiquotient
 import relation.additional
 
 namespace UA
+  universes u_lang u_str
+
   section
 
-    parameter [σ : signature]
+    parameter [σ : signature.{u_lang}]
     include σ
 
 
@@ -14,7 +16,7 @@ namespace UA
     -- precisely the condition required for the quotient set to be a well-defined structure.   -/
 
     section
-      parameter {α : Type*}
+      parameter {α : Type u_str}
       parameter [act : structure_on α]
 
 
@@ -134,15 +136,15 @@ namespace UA
 
     /- We implement `congruence` as a class (in the vein of setoid). -/
 
-    class congruence (α : Type*) [act : structure_on α] :=
+    class congruence (α : Type u_str) [act : structure_on α] :=
     (s : setoid α) (closed : operations_respect_relation s.r)
 
-    instance congruence_setoid {α : Type*} [act : structure_on α]
+    instance congruence_setoid {α : Type u_str} [act : structure_on α]
     [cong : congruence α] : setoid α := cong.s
 
     namespace congruence
       section
-        parameter {α : Type*}
+        parameter {α : Type u_str}
         parameter [act : structure_on α]
         parameter (self : congruence α)
 
@@ -163,7 +165,7 @@ namespace UA
 
         instance proj_is_hom : @homomorphism _ _ _ act _ π := λ _ _, by { apply mquotient.comp }
 
-        def quotient : Structure := ⟨quot r, quotient_action⟩
+        def quotient : Structure.{u_lang u_str} := ⟨quot r, quotient_action⟩
         def proj : Homomorphism α quotient := ⟨π, proj_is_hom⟩
 
 

@@ -8,15 +8,17 @@ import loose
 import words
 
 namespace UA
+  universes u_lang u_str u_t
+
   section
 
 
     /- A theory `τ`, over σ, is a set of `axioms` which must hold universally. -/
 
-    class theory extends signature :=
-    (axioms_ : set (word ℕ × word ℕ))
+    class theory extends signature.{u_lang} :=
+    (axioms_ : set (word.{u_lang} ℕ × word.{u_lang} ℕ))
 
-    def equation [σ : signature] (T : Type*) := word T × word T
+    abbreviation equation [σ : signature.{u_lang}] (T : Type u_t) := word T × word T
     local notation `sentance` := equation ℕ
 
     /- Formally an `equation` is just a pair of words. A `sentance` is an equation in
@@ -24,32 +26,32 @@ namespace UA
 
 
     section
-      parameter [τ : theory]
+      parameter [τ : theory.{u_lang}]
       include τ
 
 
       -- all instances of a sentance within a given set
-      def st_instances (T : Type*) (st : sentance) : set (equation T) :=
+      def st_instances (T : Type u_t) (st : sentance) : set (equation T) :=
       ⋃ subst : ℕ → T, {(subst† st.fst, subst† st.snd)}
 
       -- all instances of our axioms within a given set
-      def ax_instances (T : Type*) : set (equation T) :=
+      def ax_instances (T : Type u_t) : set (equation T) :=
       (⋃ ax ∈ τ.axioms_, st_instances T ax)
 
       -- the interpretation of an equation in a given structure
-      def eval_eqn {T : Type*} [act : structure_on T] (e : equation T) : T × T :=
+      def eval_eqn {α : Type u_str} [act : structure_on α] (e : equation α) : α × α :=
       (eval e.fst, eval e.snd)
 
       -- those sentances which are 'modelled' by a given structure
-      def true_sentances (T : Type*) [act : structure_on T] : set sentance :=
-      λ st, ∀ inst ∈ st_instances T st, (eval_eqn inst).fst = (eval_eqn inst).snd
+      def true_sentances (α : Type u_str) [act : structure_on α] : set sentance :=
+      λ st, ∀ inst ∈ st_instances α st, (eval_eqn inst).fst = (eval_eqn inst).snd
 
       -- predicate that a structure satisfies the axioms of τ
-      @[class] def satisfies_τ (T : Type*) [act : structure_on T] := τ.axioms_ ⊆ true_sentances T
+      @[class] def satisfies_τ (α : Type u_str) [act : structure_on α] := τ.axioms_ ⊆ true_sentances α
 
       -- more user-friendly version of this statement
-      lemma satisfies_iff (T : Type*) [act : structure_on T] : satisfies_τ T ↔
-      ∀ inst ∈ ax_instances T, (eval_eqn inst).fst = (eval_eqn inst).snd :=
+      lemma satisfies_iff (α : Type u_str) [act : structure_on α] : satisfies_τ α ↔
+      ∀ inst ∈ ax_instances α, (eval_eqn inst).fst = (eval_eqn inst).snd :=
       begin
         split, all_goals {intro h_main}, {
 
@@ -81,26 +83,26 @@ namespace UA
       end
     end
 
-    parameter [τ : theory]
+    parameter [τ : theory.{u_lang}]
     include τ
 
 
     /- A τ-`Object` is just a structure satisfying the axioms of τ. -/
 
     structure Object :=
-    (medium      : Type*)
-    (action      : structure_on medium)
+    (medium      : Type u_str)
+    (action      : structure_on.{u_lang u_str} medium)
     (satf_axioms : satisfies_τ medium)
 
 
     /- Given any structure, we can enfore the axioms in the 'free-est' possible way.
     -- The construction of 'free objects' (e.g. groups) is a special case of this -/
 
-    def enforce_axioms : Π X : Structure, congruence X :=
+    def enforce_axioms : Π X : Structure.{u_lang u_str}, congruence X :=
     λ X, UA.congruence.gen_by_set (eval_eqn '' (ax_instances X))
 
     -- proof a bit long, might try and silm down later
-    theorem axioms_enforced {X : Structure} : satisfies_τ (enforce_axioms X).quotient :=
+    theorem axioms_enforced {X : Structure.{u_lang u_str}} : satisfies_τ (enforce_axioms X).quotient :=
     begin
 
       let C := enforce_axioms X, -- the congruence on X

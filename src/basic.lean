@@ -8,30 +8,35 @@ import data.vector.zip
 import vector.additional
 
 namespace UA
+  universes u_lang u_str u_strA u_strB
+
   section
 
 
     /- a signature `σ` is just a set of operation symbols, with specified (finite) arity. -/
 
-    class signature := (F : Type*) (arity_of : F → ℕ)
+    class signature := (F : Type u_lang) (arity_of : F → ℕ)
     abbreviation arity_of [σ : signature] (f) := signature.arity_of f
 
 
+    /- The universes `u_strX` of the structures may be distinct, and different to `u_lang`.
+    -- We wrap the main defenitions in a section,
+    -- so that they become universe polymorphic within this file. -/
 
     section
-      parameter [σ : signature]
+      parameter [σ : signature.{u_lang}]
       include σ
 
       /- `structure_on` is a realisation of operations on a given type. -/
 
-      @[class] def structure_on (medium : Type*) :=
+      @[class] def structure_on (medium : Type u_str) : Type (max u_lang u_str) :=
       Π f, (vector medium (arity_of f)) → medium
 
 
       /- A `structure` is a `medium` equipped with the relevant `action`. -/
 
-      structure Structure := -- medium together with its structure
-      (medium : Type*) -- should make universes explicit?
+      structure Structure : Type (max u_lang (u_str+1)) :=
+      (medium : Type u_str)
       (action : structure_on medium)
 
 
@@ -46,13 +51,14 @@ namespace UA
 
 
 
-    parameter [σ : signature]
+    parameter [σ : signature.{u_lang}]
     include σ
 
 
     /- `direct product` of two stuctures -/
 
-    instance dir_prod_action (α : Type*) (β : Type*) [actA : structure_on α] [actB : structure_on β] : structure_on (α × β) :=
+    instance dir_prod_action (α : Type u_strA) (β : Type u_strB)
+    [actA : structure_on α] [actB : structure_on β] : structure_on (α × β) :=
     λ f input, (actA f (vector.map prod.fst input), actB f (vector.map prod.snd input))
 
     def dir_prod (A : Structure) (B : Structure) : Structure :=
@@ -64,8 +70,8 @@ namespace UA
 
     open vector
 
-    variables {α : Type*} [actA : structure_on α]
-    variables {β : Type*} [actB : structure_on β]
+    variables {α : Type u_strA} [actA : structure_on α]
+    variables {β : Type u_strB} [actB : structure_on β]
     include actA actB
     variable {f : σ.F}
     variable {x : vector α (arity_of f)}

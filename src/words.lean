@@ -1,21 +1,24 @@
 import cong
 
 namespace UA
+  universe u_lang
+
   section
-    parameter [σ : signature]
+    universe u_t
+    parameter [σ : signature.{u_lang}]
 
 
     /- *** `word` means an expression in the language of `σ`, with variables from `T` *** -/
 
-    inductive word (T : Type*)
+    inductive word (T : Type u_t) : Type (max u_lang u_t)
     | var           : T → word
     | opr (f : σ.F) : (fin (arity_of f) → word) → word
 
-    def vars {T : Type*} : word T → set T
+    def vars {T : Type u_t} : word T → set T
     | (word.var t)     := {t}
     | (word.opr f xxx) := ⋃ i, vars (xxx i)
 
-    theorem finitely_many_vars {T : Type*} (w : word T) : set.finite (vars w) :=
+    theorem finitely_many_vars {T : Type u_t} (w : word T) : set.finite (vars w) :=
     begin
       induction w,
 
@@ -29,27 +32,28 @@ namespace UA
 
     /- The words themselvs for a structure in the ovbious way. -/
 
-    instance action_on_words (T : Type*) : structure_on (word T) := λ f, word.opr f ∘ vector.nth
+    instance action_on_words (T : Type u_t) : structure_on (word T) := λ f, word.opr f ∘ vector.nth
 
-    def word_algebra (T : Type*) : Structure := ⟨word T, action_on_words T⟩
+    def word_algebra (T : Type u_t) : Structure := ⟨word T, action_on_words T⟩
 
-    @[simp] lemma action_of_word_algebra {T : Type*} {f www} :
+    @[simp] lemma action_of_word_algebra {T : Type u_t} {f www} :
     (word_algebra T).action f www = word.opr f www.nth := rfl
 
   end
 
   section
-    parameter [σ : signature]
+    universe u_str
+    parameter [σ : signature.{u_lang}]
     include σ
 
 
     /- A `σ-structure` admits a canonical `evaluation` from its word algebra -/
 
-    def eval {α : Type*} [act : structure_on α] : word α → α
+    def eval {α : Type u_str} [act : structure_on α] : word α → α
     | (word.var t)    := t
     | (word.opr f xxx) := act f (vector.of_fn (λ i, eval (xxx i)))
 
-    instance eval_is_hom {α : Type*} [act : structure_on α] : homomorphism (@eval α _) :=
+    instance eval_is_hom {α : Type u_str} [act : structure_on α] : homomorphism (@eval α _) :=
     begin
       intros f www,
       rw UA.action_on_words,
@@ -60,17 +64,22 @@ namespace UA
       simp,
     end
 
-    def evaluation {A : Structure} : Homomorphism (word_algebra A) A := ⟨eval, eval_is_hom⟩
+    def evaluation {A : Structure.{u_lang u_str}} : Homomorphism (word_algebra A) A :=
+    ⟨eval, eval_is_hom⟩
 
   end
 
 
   /- `translatation` is the process of substituting for the variables in a word -/
 
-  def translate [σ : signature] {S : Type*} {T : Type*}
-  (φ : S → T) : word S → word T
-  | (word.var t)     := word.var (φ t)
-  | (word.opr f xxx) := word.opr f (λ i, translate (xxx i))
+  section
+    universes u_s u_t
+
+    def translate [σ : signature.{u_lang}] {S : Type u_s} {T : Type u_t}
+    (φ : S → T) : word S → word T
+    | (word.var t)     := word.var (φ t)
+    | (word.opr f xxx) := word.opr f (λ i, translate (xxx i))
+  end
 
   /- *** Introduce notation out of sight of any parameters ***
   -- previously this was declared 'local', to depend on the parameter σ, but this
@@ -79,7 +88,8 @@ namespace UA
 
 
   section
-    parameter [σ : signature]
+    universes u_r u_s u_t u_strA u_strB
+    parameter [σ : signature.{u_lang}]
     include σ
 
 
@@ -87,7 +97,7 @@ namespace UA
     -- Should probably investigate at some point. Especially don't expose this to `simp`,
     -- for the same reason, though it isn't unequivocally a simplification anyway.     -/
     lemma translation_functorial
-    {R : Type*} {S : Type*} {T : Type*} (ψ : R → S) (φ : S → T) (w : word R) :
+    {R : Type u_r} {S : Type u_s} {T : Type u_t} (ψ : R → S) (φ : S → T) (w : word R) :
     (φ ∘ ψ)† w = (φ†) (ψ† w) :=
     begin
       induction w,
@@ -102,9 +112,9 @@ namespace UA
     -- preservation of evaluations of *any* word in the language.          -/
 
     lemma hom_preserves_eval
-    {α : Type*} {β : Type*} [actA : structure_on α] [actB : structure_on β]
+    {α : Type u_strA} {β : Type u_strB} [actA : structure_on α] [actB : structure_on β]
     {φ : α → β}
-    [H : homomorphism φ] {w : word α} : φ (eval w) = eval (translate φ w) :=
+    [H : homomorphism φ] {w : word α} : φ (eval w) = eval (φ† w) :=
     begin
       induction w with _ f www h_ind, {
         refl,
@@ -118,7 +128,7 @@ namespace UA
     end
 
     lemma hom_iff
-    {α : Type*} {β : Type*} [actA : structure_on α] [actB : structure_on β]
+    {α : Type u_strA} {β : Type u_strB} [actA : structure_on α] [actB : structure_on β]
     {φ : α → β} :
     homomorphism φ ↔ ∀ w : word α, φ (eval w) = eval (φ† w) :=
     begin
@@ -141,4 +151,5 @@ namespace UA
     end
 
   end
+
 end UA
