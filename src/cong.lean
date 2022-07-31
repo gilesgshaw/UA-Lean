@@ -1,5 +1,4 @@
 import sub
-import hom
 import multiquotient
 import relation.additional
 

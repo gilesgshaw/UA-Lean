@@ -5,7 +5,7 @@ import tactic.basic
 import tactic.nth_rewrite.default
 
 import loose
-import words
+import cong
 
 namespace UA
   universes u_lang u_str u_t

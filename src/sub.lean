@@ -1,4 +1,4 @@
-import basic
+import words
 
 namespace UA
   universes u_lang u_str
