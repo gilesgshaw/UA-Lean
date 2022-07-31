@@ -15,7 +15,7 @@ namespace UA
       /- a `subStructure` is a subset which is closed under the operations -/
 
       variable {α : Type u_str}
-      variable [act : structure_on α]
+      variable [act : action_on α]
 
       @[class] def closed (sub_medium : set α) :=
       ∀ (f) (input : vector α _), set.range input.nth ⊆ sub_medium → act f input ∈ sub_medium
@@ -31,7 +31,7 @@ namespace UA
 
 
     instance image_is_closed
-    {{α : Type u_strA}} {{β : Type u_strB}} [actA : structure_on α] [actB : structure_on β]
+    {{α : Type u_strA}} {{β : Type u_strB}} [actA : action_on α] [actB : action_on β]
     (φ : (α → β)) [hom : homomorphism φ] : closed (set.range φ) :=
     begin
       intros f yyy h,
@@ -45,7 +45,7 @@ namespace UA
     end
 
     lemma eval_on_substructure
-    {{α : Type u_str}} [actA : structure_on α] (X : set α) [cls : closed X] (w : word α) :
+    {{α : Type u_str}} [actA : action_on α] (X : set α) [cls : closed X] (w : word α) :
     vars w ⊆ X → eval w ∈ X := λ h,
     begin
       induction w with _ f www h_ind, {
@@ -62,7 +62,7 @@ namespace UA
     end
 
     lemma closed_iff
-    {α : Type u_str} [actA : structure_on α] {X : set α} :
+    {α : Type u_str} [actA : action_on α] {X : set α} :
     closed X ↔ ∀ w : word α, vars w ⊆ X → eval w ∈ X :=
     begin
       split, {
@@ -85,10 +85,10 @@ namespace UA
       },
     end
 
-    def closure {{α : Type u_str}} [actA : structure_on α] (X : set α) : set α :=
+    def closure {{α : Type u_str}} [actA : action_on α] (X : set α) : set α :=
     ⋂₀ { S | closed S ∧ X ⊆ S}
 
-    instance closure_is_closed {α : Type u_str} [actA : structure_on α] {X : set α} :
+    instance closure_is_closed {α : Type u_str} [actA : action_on α] {X : set α} :
     closed (closure X) :=
     begin
       intros _ _ h_x S h_S,
@@ -98,7 +98,7 @@ namespace UA
       exact le_Inf_iff.1,
     end
 
-    lemma closure_inflationary {α : Type u_str} [actA : structure_on α] {X : set α} :
+    lemma closure_inflationary {α : Type u_str} [actA : action_on α] {X : set α} :
     X ⊆ closure X :=
     begin
       intros _ _ S h_S,
@@ -106,7 +106,7 @@ namespace UA
       assumption,
     end
 
-    lemma closure_eq {α : Type u_str} [actA : structure_on α] {X : set α} :
+    lemma closure_eq {α : Type u_str} [actA : action_on α] {X : set α} :
     closure X = eval '' {w | vars w ⊆ X} :=
     begin
       apply set.subset.antisymm,

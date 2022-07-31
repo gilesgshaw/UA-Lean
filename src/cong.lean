@@ -16,7 +16,7 @@ namespace UA
 
     section
       parameter {α : Type u_str}
-      parameter [act : structure_on α]
+      parameter [act : action_on α]
 
 
       -- the operations are said to 'respect' a binary relation ~ if,
@@ -135,16 +135,16 @@ namespace UA
 
     /- We implement `congruence` as a class (in the vein of setoid). -/
 
-    class congruence (α : Type u_str) [act : structure_on α] :=
+    class congruence (α : Type u_str) [act : action_on α] :=
     (s : setoid α) (closed : operations_respect_relation s.r)
 
-    instance congruence_setoid {α : Type u_str} [act : structure_on α]
+    instance congruence_setoid {α : Type u_str} [act : action_on α]
     [cong : congruence α] : setoid α := cong.s
 
     namespace congruence
       section
         parameter {α : Type u_str}
-        parameter [act : structure_on α]
+        parameter [act : action_on α]
         parameter (self : congruence α)
 
         def r := self.s.r
@@ -159,7 +159,7 @@ namespace UA
           exact h,
         end
 
-        instance quotient_action : structure_on (quot r) :=
+        instance quotient_action : action_on (quot r) :=
         λ f, mquotient.lift (π ∘ act f) (respectful)
 
         instance proj_is_hom : @homomorphism _ _ _ act _ π := λ _ _, by { apply mquotient.comp }

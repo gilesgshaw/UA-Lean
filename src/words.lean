@@ -32,7 +32,7 @@ namespace UA
 
     /- The words themselvs for a structure in the ovbious way. -/
 
-    instance action_on_words (T : Type u_t) : structure_on (word T) := λ f, word.opr f ∘ vector.nth
+    instance action_on_words (T : Type u_t) : action_on (word T) := λ f, word.opr f ∘ vector.nth
 
     def word_algebra (T : Type u_t) : Structure := ⟨word T, action_on_words T⟩
 
@@ -49,11 +49,11 @@ namespace UA
 
     /- A `σ-structure` admits a canonical `evaluation` from its word algebra -/
 
-    def eval {α : Type u_str} [act : structure_on α] : word α → α
+    def eval {α : Type u_str} [act : action_on α] : word α → α
     | (word.var t)    := t
     | (word.opr f xxx) := act f (vector.of_fn (λ i, eval (xxx i)))
 
-    instance eval_is_hom {α : Type u_str} [act : structure_on α] : homomorphism (@eval α _) :=
+    instance eval_is_hom {α : Type u_str} [act : action_on α] : homomorphism (@eval α _) :=
     begin
       intros f www,
       rw UA.action_on_words,
@@ -112,7 +112,7 @@ namespace UA
     -- preservation of evaluations of *any* word in the language.          -/
 
     lemma hom_preserves_eval
-    {α : Type u_strA} {β : Type u_strB} [actA : structure_on α] [actB : structure_on β]
+    {α : Type u_strA} {β : Type u_strB} [actA : action_on α] [actB : action_on β]
     {φ : α → β}
     [H : homomorphism φ] {w : word α} : φ (eval w) = eval (φ† w) :=
     begin
@@ -128,7 +128,7 @@ namespace UA
     end
 
     lemma hom_iff
-    {α : Type u_strA} {β : Type u_strB} [actA : structure_on α] [actB : structure_on β]
+    {α : Type u_strA} {β : Type u_strB} [actA : action_on α] [actB : action_on β]
     {φ : α → β} :
     homomorphism φ ↔ ∀ w : word α, φ (eval w) = eval (φ† w) :=
     begin

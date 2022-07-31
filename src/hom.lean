@@ -20,11 +20,11 @@ namespace UA
       /- A `homomorphism` is simply a function preserving the operations -/
 
       @[class] def homomorphism
-      {{α : Type u_strA}} {{β : Type u_strB}} [actA : structure_on α] [actB : structure_on β]
+      {{α : Type u_strA}} {{β : Type u_strB}} [actA : action_on α] [actB : action_on β]
       (func : (α → β)) : Prop := ∀ f v, actB f (vector.map func v) = func (actA f v)
 
       def Homomorphism
-      (α : Type u_strA) (β : Type u_strB) [actA : structure_on α] [actB : structure_on β] :
+      (α : Type u_strA) (β : Type u_strB) [actA : action_on α] [actB : action_on β] :
       Type (max u_strA u_strB) := subtype (@homomorphism α β actA actB)
 
     end
@@ -36,7 +36,7 @@ namespace UA
       -- variables must be in this order for the category theory methods
 
       variables {α : Type u_strA} {β : Type u_strB} {γ : Type u_strC}
-      variables [A : structure_on α] [B : structure_on β] [C : structure_on γ]
+      variables [A : action_on α] [B : action_on β] [C : action_on γ]
 
       include A
       instance id_is_hom : homomorphism (@id α) :=
@@ -58,12 +58,12 @@ namespace UA
       -- This is needed by much of the category theory infastructure in mathlib       -/
 
       abbreviation homomorphism_
-      {{α β : Type (max u_lang u_str)}} [actA : structure_on α] [actB : structure_on β]
+      {{α β : Type (max u_lang u_str)}} [actA : action_on α] [actB : action_on β]
       (func : (α → β)) : Prop :=
       @homomorphism.{u_lang (max u_lang u_str) (max u_lang u_str)} _ α β actA actB func
 
       abbreviation Homomorphism_
-      (α β : Type (max u_lang u_str)) [actA : structure_on α] [actB : structure_on β] :
+      (α β : Type (max u_lang u_str)) [actA : action_on α] [actB : action_on β] :
       Type (max u_lang u_str) :=
       @Homomorphism.{u_lang (max u_lang u_str) (max u_lang u_str)} _ α β actA actB
 
@@ -87,7 +87,7 @@ namespace UA
     -- a type in their own right. We generate this automatically from the above. -/
 
     instance str_bundled_hom : bundled_hom Homomorphism_.{u_lang u_str} :=
-    unbundled_hom.bundled_hom structure_on_ homomorphism_
+    unbundled_hom.bundled_hom action_on_ homomorphism_
 
     /- Now we let `STRUCTURE` refer to the category of σ-Structures. -/
 

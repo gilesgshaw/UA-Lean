@@ -29,9 +29,9 @@ namespace UA
 
     section
 
-      /- `structure_on` is a realisation of operations on a given type. -/
+      /- `action_on` is a realisation of operations on a given type. -/
 
-      @[class] def structure_on [σ : signature.{u_lang}] (medium : Type u_str) : Type (max u_lang u_str) :=
+      @[class] def action_on [σ : signature.{u_lang}] (medium : Type u_str) : Type (max u_lang u_str) :=
       Π f, (vector medium (arity_of f)) → medium
 
       parameter [σ : signature.{u_lang}]
@@ -39,7 +39,7 @@ namespace UA
 
       /- A `structure` is a `medium` equipped with the relevant `action`. -/
 
-      def Structure : Type (max u_lang (u_str+1)) := bundled (structure_on.{u_lang u_str})
+      def Structure : Type (max u_lang (u_str+1)) := bundled (action_on.{u_lang u_str})
 
       abbreviation Structure.medium (self : Structure) := self.α
       abbreviation Structure.action (self : Structure) := self.str
@@ -47,7 +47,7 @@ namespace UA
 
       /- Coersions and instances -/
 
-      instance Structure_to_structure_on (A : Structure) : structure_on A.medium := A.action
+      instance Structure_to_action_on (A : Structure) : action_on A.medium := A.action
       instance Structure_to_sort : has_coe_to_sort Structure _ := ⟨λ str, str.medium⟩
       instance Structure_to_fun : has_coe_to_fun Structure _ := ⟨λ str, str.action⟩
 
@@ -55,7 +55,7 @@ namespace UA
 
 
 
-    /- `structure_on_` and `Structure_` are subtle varients, where we require the media have
+    /- `action_on_` and `Structure_` are subtle varients, where we require the media have
     -- universe levels at least `u_lang`. This ensures structures have the same levels as their
     -- underlying sets, as is required by much of the category theory infastructure in mathlib -/
 
@@ -63,8 +63,8 @@ namespace UA
       parameter [σ : signature.{u_lang}]
       include σ
 
-      abbreviation structure_on_ : Type (max u_lang u_str) → Type (max u_lang u_str) :=
-      λ α, structure_on.{u_lang (max u_lang u_str)} α
+      abbreviation action_on_ : Type (max u_lang u_str) → Type (max u_lang u_str) :=
+      λ α, action_on.{u_lang (max u_lang u_str)} α
 
       abbreviation Structure_ : Type ((max u_lang u_str)+1) :=
       Structure.{u_lang (max u_lang u_str)}
@@ -79,7 +79,7 @@ namespace UA
     /- `direct product` of two stuctures -/
 
     instance dir_prod_action (α : Type u_strA) (β : Type u_strB)
-    [actA : structure_on α] [actB : structure_on β] : structure_on (α × β) :=
+    [actA : action_on α] [actB : action_on β] : action_on (α × β) :=
     λ f input, (actA f (vector.map prod.fst input), actB f (vector.map prod.snd input))
 
     def dir_prod (A : Structure) (B : Structure) : Structure :=
@@ -91,8 +91,8 @@ namespace UA
 
     open vector
 
-    variables {α : Type u_strA} [actA : structure_on α]
-    variables {β : Type u_strB} [actB : structure_on β]
+    variables {α : Type u_strA} [actA : action_on α]
+    variables {β : Type u_strB} [actB : action_on β]
     include actA actB
     variable {f : σ.F}
     variable {x : vector α (arity_of f)}

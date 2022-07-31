@@ -39,18 +39,18 @@ namespace UA
       (⋃ ax ∈ τ.axioms_, st_instances T ax)
 
       -- the interpretation of an equation in a given structure
-      def eval_eqn {α : Type u_str} [act : structure_on α] (e : equation α) : α × α :=
+      def eval_eqn {α : Type u_str} [act : action_on α] (e : equation α) : α × α :=
       (eval e.fst, eval e.snd)
 
       -- those sentances which are 'modelled' by a given structure
-      def true_sentances (α : Type u_str) [act : structure_on α] : set sentance :=
+      def true_sentances (α : Type u_str) [act : action_on α] : set sentance :=
       λ st, ∀ inst ∈ st_instances α st, (eval_eqn inst).fst = (eval_eqn inst).snd
 
       -- predicate that a structure satisfies the axioms of τ
-      @[class] def satisfies_τ (α : Type u_str) [act : structure_on α] := τ.axioms_ ⊆ true_sentances α
+      @[class] def satisfies_τ (α : Type u_str) [act : action_on α] := τ.axioms_ ⊆ true_sentances α
 
       -- more user-friendly version of this statement
-      lemma satisfies_iff (α : Type u_str) [act : structure_on α] : satisfies_τ α ↔
+      lemma satisfies_iff (α : Type u_str) [act : action_on α] : satisfies_τ α ↔
       ∀ inst ∈ ax_instances α, (eval_eqn inst).fst = (eval_eqn inst).snd :=
       begin
         split, all_goals {intro h_main}, {
@@ -174,7 +174,7 @@ namespace UA
 
     structure Object :=
     (medium      : Type u_str)
-    (action      : structure_on.{u_lang u_str} medium)
+    (action      : action_on.{u_lang u_str} medium)
     (satf_axioms : satisfies_τ medium)
 
 
