@@ -12,6 +12,18 @@ lemma ap_fun {α : Type*} {β : Type*} {f : α → β} {x : α} :
 lemma specialize_by_fun {α : Type*} {β : Type*} (f : α → β) {p : β → Prop} :
 (∀ y, p y) → (∀ x, p (f x)) := λ h x, h (f x)
 
+def choose_from_relation {α : Type*} {β : Type*} (r : α → β → Prop) :
+(∀ i, ∃ a, r i a) → (∃ f : α → β, ∀ i, r i (f i)) :=
+begin
+  intro h,
+
+  let dependant_choice_function : Π a, {b : β // r a b} :=
+  λ a, classical.choice (nonempty_subtype.mpr (h a)),
+
+  use λ a, (dependant_choice_function a),
+  exact λ a, (dependant_choice_function a).property,
+end
+
 noncomputable def partial_section {α : Type*} {β : Type*} (f : α → β) : (set.range f) → α := λ y,
 @classical.choice {x // f x = y} (nonempty_subtype.mpr (by {cases y.property with x _, use x, assumption}))
 
